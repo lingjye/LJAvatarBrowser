@@ -24,5 +24,5 @@ TODO: Add long description of the pod here.
   # s.osx.exclude_files = 'Classes/ios'  
   # s.public_header_files = 'Classes/**/*.h'  
   s.frameworks = 'Foundation', 'UIKit'  
-  
+  s.dependency "SDWebImage", "~> 3.8.1"
 end  
