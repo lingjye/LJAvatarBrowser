@@ -8,12 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface LJAvatarBrowser : NSObject
 /**
  *	@brief	浏览头像
  *
- *	@param 	oldImageView 	头像所在的imageView
+ *	@param 	avatarImageView 	头像所在的imageView
  */
 +(void)showImageView:(UIImageView*)avatarImageView;
-
++(void)showImageView:(UIImageView*)avatarImageView originUrl:(NSString *)url;
 @end

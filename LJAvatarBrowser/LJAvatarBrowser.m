@@ -7,6 +7,7 @@
 //
 
 #import "LJAvatarBrowser.h"
+#import <ImageIO/ImageIO.h>
 
 static CGRect avatarFrame;
 static UIImageView *newAvatarImageView;
@@ -17,8 +18,10 @@ static CGFloat screenHeight;
 
 + (void)showImageView:(UIImageView *)avatarImageView {
     if (avatarImageView == nil || avatarImageView.image == nil) {
-        NSLog(@"avatarImageView is nil");
-        return;
+        if (!avatarImageView.animationImages.count) {
+            NSLog(@"avatarImageView is nil");
+            return;
+        }
     }
     
     screenWidth = [UIScreen mainScreen].bounds.size.width;
@@ -36,25 +39,37 @@ static CGFloat screenHeight;
     // same size of original image
     avatarFrame = [avatarImageView convertRect:avatarImageView.bounds toView:keyWindow];
     newAvatarImageView = [[UIImageView alloc] initWithFrame:avatarFrame];
-    [newAvatarImageView setImage:avatarImage];
+    // make it show on middle
+    CGFloat proportion, top, height;
+    if (avatarImage) {
+        [newAvatarImageView setImage:avatarImage];
+        // make it show on middle
+        proportion = screenWidth / avatarImage.size.width;
+        top = screenHeight / 2 - avatarImage.size.height * proportion / 2;
+        height = avatarImage.size.height * proportion;
+    }else {
+        newAvatarImageView.animationImages = avatarImageView.animationImages;
+        newAvatarImageView.animationDuration = avatarImageView.animationDuration;
+        [newAvatarImageView startAnimating];
+        // make it show on middle
+        proportion = screenWidth / newAvatarImageView.animationImages.firstObject.size.width;
+        top = screenHeight / 2 - newAvatarImageView.animationImages.firstObject.size.height * proportion / 2;
+        height = newAvatarImageView.animationImages.firstObject.size.height * proportion;
+    }
+    
     [newAvatarImageView setUserInteractionEnabled:YES];
     [background addSubview:newAvatarImageView];
     [keyWindow addSubview:background];
-    
-    // make it show on middle
-    CGFloat proportion = screenWidth / avatarImage.size.width;
-    CGFloat top = screenHeight / 2 - avatarImage.size.height * proportion / 2;
-    CGFloat height = avatarImage.size.height * proportion;
     
     // return to origin view by tap on background
     UITapGestureRecognizer *tapOnBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionTapOnImage:)];
     [tapOnBackground setNumberOfTapsRequired:1];
     [background addGestureRecognizer:tapOnBackground];
     
-    UITapGestureRecognizer *doubleTapGestureRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTap:)];
-    [doubleTapGestureRecognizer setNumberOfTapsRequired:2];
-    [background addGestureRecognizer:doubleTapGestureRecognizer];
-    [tapOnBackground requireGestureRecognizerToFail:doubleTapGestureRecognizer];
+    UITapGestureRecognizer *doubleTapOnImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(doubleTap:)];
+    [doubleTapOnImage setNumberOfTapsRequired:2];
+    [background addGestureRecognizer:doubleTapOnImage];
+    [tapOnBackground requireGestureRecognizerToFail:doubleTapOnImage];
     
     // scale by pinch on background
     UIPinchGestureRecognizer *pinchOnImage = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(actionPinchOnImage:)];
@@ -76,6 +91,11 @@ static CGFloat screenHeight;
          [newAvatarImageView setFrame:CGRectMake(0, top, screenWidth, height)];
          [background setAlpha:1];
      }];
+}
+
++ (void)showImageView:(UIImageView *)avatarImageView originUrl:(NSString *)url {
+    [self showImageView:avatarImageView];
+    [newAvatarImageView sd_setImageWithURL:url placeholderImage:avatarImageView.image];
 }
 
 // tap to return to original view
