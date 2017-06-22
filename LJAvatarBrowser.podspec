@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|  
   s.name             = "LJAvatarBrowser"  
-  s.version          = "1.0.0"  
+  s.version          = "1.0.1"  
   s.summary          = "A simple and easy-to-use image viewer."  
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
