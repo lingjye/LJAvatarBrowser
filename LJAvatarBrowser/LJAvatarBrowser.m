@@ -95,7 +95,7 @@ static CGFloat screenHeight;
 
 + (void)showImageView:(UIImageView *)avatarImageView originUrl:(NSString *)url {
     [self showImageView:avatarImageView];
-    [newAvatarImageView sd_setImageWithURL:url placeholderImage:avatarImageView.image];
+    [newAvatarImageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:avatarImageView.image];
 }
 
 // tap to return to original view
