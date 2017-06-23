@@ -8,7 +8,7 @@
 
 #import "LJAvatarBrowser.h"
 #import <ImageIO/ImageIO.h>
-
+#import <UIImageView+WebCache.h>
 static CGRect avatarFrame;
 static UIImageView *newAvatarImageView;
 static CGFloat currentScale;
