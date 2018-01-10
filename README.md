@@ -35,7 +35,7 @@ Or
  @return urlString
  */
  
-*- (NSString *)photoBrowser:(LJAvatarBrowser *)browser highQualityImageURLForIndex:(NSInteger)index;
+- (NSString *)photoBrowser:(LJAvatarBrowser *)browser highQualityImageURLForIndex:(NSInteger)index;
 
 /**
  将要消失,用于得到最终需要变换的坐标
@@ -44,13 +44,13 @@ Or
  @return 最终要显示的源imageview
  */
  
-*- (UIImageView *)photoBrowserWillDissmissAtIndex:(NSInteger)index;
+- (UIImageView *)photoBrowserWillDissmissAtIndex:(NSInteger)index;
 
 /**
  长按事件
  */
  
-*- (void)photoBrowserLongPressAtIndex:(NSInteger)index;
+- (void)photoBrowserLongPressAtIndex:(NSInteger)index;
 
 @end
 
@@ -87,9 +87,9 @@ Or
  *	@param 	avatarImageView 	头像所在的imageView
  */
  
-*+ (LJAvatarBrowser *)showImageView:(UIImageView*)avatarImageView;
++ (LJAvatarBrowser *)showImageView:(UIImageView*)avatarImageView;
 
-*+ (LJAvatarBrowser *)showImageView:(UIImageView*)avatarImageView originUrl:(NSString *)url;
++ (LJAvatarBrowser *)showImageView:(UIImageView*)avatarImageView originUrl:(NSString *)url;
 
 /**
  查看多placeholder @param previewPhotos 预览数组
@@ -99,7 +99,7 @@ Or
  @param placeholder 占位图
  */
  
-*+ (LJAvatarBrowser *)showPreviewPhotos:(NSMutableArray *)previewPhotos
++ (LJAvatarBrowser *)showPreviewPhotos:(NSMutableArray *)previewPhotos
                               delegate:(id)delegate
                          containerView:(UIView *)containerView
                           previewIndex:(NSInteger)previewIndex
