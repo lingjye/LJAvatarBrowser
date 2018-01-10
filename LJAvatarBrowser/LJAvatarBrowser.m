@@ -8,7 +8,11 @@
 
 #import "LJAvatarBrowser.h"
 #import <ImageIO/ImageIO.h>
-#import <UIImageView+WebCache.h>
+#if __has_include(<UIImageView/UIImageView+WebCache.h>)
+#import <SDWebImage/UIImageView+WebCache.h>
+#else
+#import "UIImageView+WebCache.h"
+#endif
 
 #define LJ_SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 #define LJ_SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
