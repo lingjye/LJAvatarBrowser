@@ -8,6 +8,7 @@
     
 ## <a id="Example"></a>Example
 
+```swift
 [LJAvatarBrowser showImageView:imageView];
 
 Or
@@ -17,10 +18,11 @@ Or
 Or
 
 [LJAvatarBrowser showPreviewPhotos:[_imgArray mutableCopy] delegate:self containerView:containerView previewIndex:tag placeholderImage:nil]
-
+```
 
 ## <a id="LJAvatarBrowser.h"></a>LJAvatarBrowser.h
 
+```swift
 @protocol LJAvatarBrowserDelegate<NSObject>
 
 @optional
@@ -104,4 +106,5 @@ Or
                       placeholderImage:(UIImage *)placeholder;
 
 @end
-    
+```  
+ 
