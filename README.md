@@ -1,5 +1,8 @@
 # LJAvatarBrowserDemo
 一款简单易用,轻量级图片查看工具
+
+![效果图](https://github.com/iBoCoding/LJAvatarBrowser/blob/master/result.gif)
+
 ## <a id="How_to_use_LJAvatarBrowser"></a>How to use LJAvatarBrowser
 * Installation with CocoaPods：`pod 'LJAvatarBrowser'`
 * Manual import：
