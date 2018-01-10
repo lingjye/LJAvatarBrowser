@@ -1,28 +1,13 @@
-Pod::Spec.new do |s|  
-  s.name             = "LJAvatarBrowser"  
-  s.version          = "1.0.2"  
-  s.summary          = "A simple and easy-to-use image viewer."  
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
-  s.homepage         = "https://github.com/ChatCoding/LJAvatarBrowser"  
-  # s.screenshots      = "www.example.com/screenshots_1", "www.example.com/screenshots_2"  
-  s.license          = 'MIT'  
-  s.author           = { "领琾" => "825238111@qq.com" }  
-  s.source           = { :git => "https://github.com/ChatCoding/LJAvatarBrowser.git", :tag => s.version.to_s }  
-  # s.social_media_url = 'https://twitter.com/NAME'  
-  
-  s.platform     = :ios, '7.0'  
-  # s.ios.deployment_target = '7.0'  
-  # s.osx.deployment_target = '10.11'  
-  s.requires_arc = true  
-  
-  s.source_files = 'LJAvatarBrowser/*'  
-  # s.resources = 'Assets'  
-  
-  # s.ios.exclude_files = 'Classes/osx'  
-  # s.osx.exclude_files = 'Classes/ios'  
-  # s.public_header_files = 'Classes/**/*.h'  
-  s.frameworks = 'Foundation', 'UIKit'  
-  s.dependency 'SDWebImage', '~> 3.8.2'
-end  
+Pod::Spec.new do |s|
+  s.name         = "LJAvatarBrowser"
+  s.version      = "1.1"
+  s.summary      = "An easy way to look big photo"
+  s.homepage     = "https://github.com/iBoCoding/LJAvatarBrowser"
+  s.license      = "MIT"
+  s.author       = { "iBo Wong" => "825238111@qq.com" }
+  s.platform     = :ios, "7.0"
+  s.source       = { :git => "https://github.com/iBoCoding/LJAvatarBrowser.git", :tag => "#{s.version}" }
+  s.source_files = "LJAvatarBrowser", "LJAvatarBrowser/*.{h,m}"
+  s.requires_arc = true
+  s.dependency "SDWebImage"
+end
