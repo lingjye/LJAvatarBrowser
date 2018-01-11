@@ -36,6 +36,11 @@ static CGFloat const itemSpace = 20.0;
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.indicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2.0, CGRectGetHeight(self.bounds));
+}
+
 - (void)lj_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder completion:(void (^)(void))completion {
     [self.indicatorView startAnimating];
     
@@ -72,7 +77,7 @@ static CGFloat const itemSpace = 20.0;
         _indicatorView.hidesWhenStopped = YES;
         [self addSubview:_indicatorView];
         
-        _indicatorView.center = CGPointMake(CGRectGetWidth(self.frame)/2.0, CGRectGetHeight(self.frame)/2.0);
+        _indicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2.0, CGRectGetHeight(self.bounds));
     }
     return _indicatorView;
 }
@@ -103,7 +108,6 @@ static CGFloat const itemSpace = 20.0;
         _scrollView.showsVerticalScrollIndicator = NO;
         _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         _scrollView.delaysContentTouches = NO;
-        _scrollView.canCancelContentTouches = YES;
         _scrollView.alwaysBounceVertical = NO;
         if (@available(ios 11.0,*)) {
             [_scrollView setContentInsetAdjustmentBehavior:UIScrollViewContentInsetAdjustmentNever];
@@ -114,7 +118,6 @@ static CGFloat const itemSpace = 20.0;
         _imageView.backgroundColor = [UIColor clearColor];
         _imageView.clipsToBounds = YES;
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
-        self.imageView.userInteractionEnabled = YES;
         [_scrollView addSubview:_imageView];
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTap:)];
@@ -176,11 +179,11 @@ static CGFloat const itemSpace = 20.0;
     if (_scrollView.zoomScale > 1.0) {
         [_scrollView setZoomScale:1.0 animated:YES];
     } else {
-        CGPoint touchPoint = [tap locationInView:self.imageView];
+        CGPoint touchPoint = [tap locationInView:_imageView];
         CGFloat newZoomScale = 2;
-        CGFloat imageScale = self.imageView.image.size.height / self.imageView.image.size.width;
+        CGFloat imageScale = _imageView.image.size.height / _imageView.image.size.width;
         if (imageScale < 1) {
-            newZoomScale = LJ_SCREEN_HEIGHT / self.imageView.frame.size.height;
+            newZoomScale = LJ_SCREEN_HEIGHT / _imageView.frame.size.height;
         }
         CGFloat xsize = _scrollView.frame.size.width / newZoomScale;
         CGFloat ysize = _scrollView.frame.size.height / newZoomScale;
@@ -225,13 +228,13 @@ static CGFloat const itemSpace = 20.0;
     }
 }
 
-- (void)lj_setHighQualityImageURL:(NSString *)url {
+- (void)lj_setHighQualityImageURL:(NSString *)url placeholderImage:(UIImage *)placeholderImage {
     if (!url) {
         return;
     }
     __weak typeof(self) weakCell = self;
     NSURL *rURL = (NSURL *)url;
-    [self.imageView lj_setImageWithURL:rURL placeholderImage:self.imageView.image completion:^{
+    [self.imageView lj_setImageWithURL:rURL placeholderImage:placeholderImage ? : self.imageView.image completion:^{
         [weakCell resizeSubviews];
     }];
 }
@@ -282,7 +285,7 @@ static UIWindow *window;
         flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         flowLayout.minimumInteritemSpacing = 0;
         flowLayout.minimumLineSpacing = 0;
-        // there page sapce is equal to 20
+
         _collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-itemSpace / 2.0, 0, LJ_SCREEN_WIDTH + itemSpace, LJ_SCREEN_HEIGHT) collectionViewLayout:flowLayout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
@@ -292,6 +295,7 @@ static UIWindow *window;
         _collectionView.showsVerticalScrollIndicator = NO;
         _collectionView.backgroundColor = [UIColor clearColor];
         [self addSubview:_collectionView];
+        
         [_collectionView registerClass:[LJAvatarBrowserCell class] forCellWithReuseIdentifier:@"LJAvatarBrowserCellID"];
         
         _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, LJ_SCREEN_HEIGHT - 50, LJ_SCREEN_WIDTH, 50)];
@@ -305,8 +309,8 @@ static UIWindow *window;
 }
 
 - (void)singleTap {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(photoBrowserWillDissmissAtIndex:)]) {
-        self.containerView = [self.delegate photoBrowserWillDissmissAtIndex:self.pageControl.currentPage];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(photoBrowser:willDissmissAtIndex:)]) {
+        self.containerView = [self.delegate photoBrowser:self willDissmissAtIndex:self.pageControl.currentPage];
     }
     
     if (CGRectIsNull(_avatarFrame) || CGRectIsEmpty(_avatarFrame)) {
@@ -549,9 +553,6 @@ static UIWindow *window;
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     LJAvatarBrowserCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"LJAvatarBrowserCellID" forIndexPath:indexPath];
-    if (self.previewPhotos.count > indexPath.row) {
-        [cell lj_setImageWithURL:self.previewPhotos[indexPath.row] placeholderImage:_placeholderImage];
-    }
     __weak typeof(self) weakBrowser = self;
     cell.singleTapGestureBlock = ^{
         [weakBrowser singleTap];
@@ -560,19 +561,31 @@ static UIWindow *window;
         if (weakBrowser.longPressBlock) {
             weakBrowser.longPressBlock(indexPath.row);
         }
-        if (weakBrowser.delegate && [weakBrowser.delegate respondsToSelector:@selector(photoBrowserLongPressAtIndex:)]) {
-            [weakBrowser.delegate photoBrowserLongPressAtIndex:indexPath.row];
+        if (weakBrowser.delegate && [weakBrowser.delegate respondsToSelector:@selector(photoBrowser:longPressAtIndex:)]) {
+            [weakBrowser.delegate photoBrowser:self longPressAtIndex:indexPath.row];
         }
     };
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(photoBrowser:highQualityImageURLForIndex:)]) {
-        NSString *highQualityImageURL = [self.delegate photoBrowser:self highQualityImageURLForIndex:indexPath.row];
+    UIImage *placeHolderImage = self.placeholderImage;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(photoBrowser:placeholderImageForIndex:)]) {
+        UIImage *image = [self.delegate photoBrowser:self placeholderImageForIndex:indexPath.row];
+        if (image) {
+            placeHolderImage = image;
+        }
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(photoBrowser:originImageURLForIndex:)]) {
+        NSString *highQualityImageURL = [self.delegate photoBrowser:self originImageURLForIndex:indexPath.row];
         if (highQualityImageURL) {
             LJAvatarBrowserCell *ljCell = (LJAvatarBrowserCell *)cell;
-            [ljCell lj_setHighQualityImageURL:highQualityImageURL];
+            [ljCell lj_setHighQualityImageURL:highQualityImageURL placeholderImage:placeHolderImage];
+        }
+    }else {
+        if (self.previewPhotos.count > indexPath.row) {
+            LJAvatarBrowserCell *ljCell = (LJAvatarBrowserCell *)cell;
+            [ljCell lj_setImageWithURL:self.previewPhotos[indexPath.row] placeholderImage:_placeholderImage];
         }
     }
 }

@@ -21,20 +21,28 @@
  @param index 滚动下标
  @return urlString
  */
-- (NSString *)photoBrowser:(LJAvatarBrowser *)browser highQualityImageURLForIndex:(NSInteger)index;
+- (NSString *)photoBrowser:(LJAvatarBrowser *)browser originImageURLForIndex:(NSInteger)index;
 
 /**
- 将要消失,用于得到最终需要变换的坐标
+ 返回占位图
+
+ @param browser LJAvatarBrowser
+ @param index 滚动下标
+ @return placeholderImage
+ */
+- (UIImage *)photoBrowser:(LJAvatarBrowser *)browser placeholderImageForIndex:(NSInteger)index;
+/**
+ 将要消失,返回最终浏览的imageview
 
  @param index 当前显示的下标
- @return 最终要显示的源imageview
+ @return 最终浏览的imageview
  */
-- (UIImageView *)photoBrowserWillDissmissAtIndex:(NSInteger)index;
+- (UIView *)photoBrowser:(LJAvatarBrowser *)browser willDissmissAtIndex:(NSInteger)index;
 
 /**
  长按事件
  */
-- (void)photoBrowserLongPressAtIndex:(NSInteger)index;
+- (void)photoBrowser:(LJAvatarBrowser *)browser longPressAtIndex:(NSInteger)index;
 
 @end
 
@@ -64,12 +72,22 @@
  长按事件
  */
 @property (nonatomic, copy) void (^longPressBlock)(NSInteger);
+
 /**
- *	@brief	浏览头像
- *
- *	@param 	avatarImageView 	头像所在的imageView
+ LJAvatarBrowser
+
+ @param avatarImageView 预览的imageView
+ @return LJAvatarBrowser
  */
 + (LJAvatarBrowser *)showImageView:(UIImageView*)avatarImageView;
+
+/**
+ LJAvatarBrowser
+
+ @param avatarImageView 预览的imageView
+ @param url 原高清地址
+ @return LJAvatarBrowser
+ */
 + (LJAvatarBrowser *)showImageView:(UIImageView*)avatarImageView originUrl:(NSString *)url;
 
 /**
@@ -94,8 +112,5 @@
 @end
 
 @interface LJAvatarBrowserCell : UICollectionViewCell
-
-- (void)lj_setImageWithURL:(id)url placeholderImage:(UIImage *)placeholder;
-- (void)lj_setHighQualityImageURL:(NSString *)url;
 
 @end

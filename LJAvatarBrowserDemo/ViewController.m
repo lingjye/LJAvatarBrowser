@@ -66,7 +66,7 @@
     NSLog(@"长按%tu",index);
 }
 
-- (UIImageView *)photoBrowserWillDissmissAtIndex:(NSInteger)index {
+- (UIView *)photoBrowser:(LJAvatarBrowser *)browser willDissmissAtIndex:(NSInteger)index {
     UIImageView *view = [self.view viewWithTag:index + 100];
     return view;
 }
