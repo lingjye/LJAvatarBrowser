@@ -62,7 +62,7 @@
 }
 
 #pragma mark
-- (void)photoBrowserLongPressAtIndex:(NSInteger)index {
+- (void)photoBrowser:(LJAvatarBrowser *)browser longPressAtIndex:(NSInteger)index{
     NSLog(@"长按%tu",index);
 }
 
@@ -71,7 +71,7 @@
     return view;
 }
 
-- (NSString *)photoBrowser:(LJAvatarBrowser *)browser highQualityImageURLForIndex:(NSInteger)index {
+- (NSString *)photoBrowser:(LJAvatarBrowser *)browser originImageURLForIndex:(NSInteger)index {
     if (index == 1) {
         return @"https://ss0.baidu.com/73F1bjeh1BF3odCf/it/u=1156432014,2449352063&fm=85&s=329015CD9C40F5571A94D8A203006011";
     }
