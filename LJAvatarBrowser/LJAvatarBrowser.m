@@ -38,7 +38,7 @@ static CGFloat const itemSpace = 20.0;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.indicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2.0, CGRectGetHeight(self.bounds));
+    self.indicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2.0, CGRectGetHeight(self.bounds)/2.0);
 }
 
 - (void)lj_setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder completion:(void (^)(void))completion {
@@ -77,7 +77,7 @@ static CGFloat const itemSpace = 20.0;
         _indicatorView.hidesWhenStopped = YES;
         [self addSubview:_indicatorView];
         
-        _indicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2.0, CGRectGetHeight(self.bounds));
+        _indicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2.0, CGRectGetHeight(self.bounds)/2.0);
     }
     return _indicatorView;
 }
@@ -234,7 +234,7 @@ static CGFloat const itemSpace = 20.0;
     }
     __weak typeof(self) weakCell = self;
     NSURL *rURL = (NSURL *)url;
-    [self.imageView lj_setImageWithURL:rURL placeholderImage:placeholderImage ? : self.imageView.image completion:^{
+    [self.imageView lj_setImageWithURL:rURL placeholderImage:self.imageView.image ? : placeholderImage completion:^{
         [weakCell resizeSubviews];
     }];
 }
@@ -285,7 +285,7 @@ static UIWindow *window;
         flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
         flowLayout.minimumInteritemSpacing = 0;
         flowLayout.minimumLineSpacing = 0;
-
+        
         _collectionView = [[UICollectionView alloc]initWithFrame:CGRectMake(-itemSpace / 2.0, 0, LJ_SCREEN_WIDTH + itemSpace, LJ_SCREEN_HEIGHT) collectionViewLayout:flowLayout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
@@ -418,6 +418,26 @@ static UIWindow *window;
 - (void)setContainerView:(UIView *)containerView {
     _containerView = containerView;
     _avatarFrame = [containerView convertRect:containerView.bounds toView:[UIApplication sharedApplication].keyWindow];
+    if (containerView) {
+        if (!avatarContainerView) {
+            avatarContainerView = [[UIImageView alloc] initWithFrame:_avatarFrame];
+        }
+        if ([_containerView isKindOfClass:[UIImageView class]]) {
+            avatarContainerView.image = [(UIImageView *)_containerView image];
+            avatarContainerView.contentMode = _containerView.contentMode;
+            avatarContainerView.clipsToBounds = _containerView.clipsToBounds;
+            avatarContainerView.layer.cornerRadius = _containerView.layer.cornerRadius;
+        }else {
+            for (UIImageView *subView in _containerView.subviews) {
+                if ([subView isKindOfClass:[UIImageView class]] && subView.image) {
+                    avatarContainerView.image = subView.image;
+                    avatarContainerView.contentMode = subView.contentMode;
+                    avatarContainerView.clipsToBounds = subView.clipsToBounds;
+                    avatarContainerView.layer.cornerRadius = subView.layer.cornerRadius;
+                }
+            }
+        }
+    }
 }
 
 - (CGRect)animationFrame {
@@ -452,24 +472,7 @@ static UIWindow *window;
         }];
         return;
     }
-
-    avatarContainerView = [[UIImageView alloc] initWithFrame:_avatarFrame];
     
-    if ([_containerView isKindOfClass:[UIImageView class]]) {
-        avatarContainerView.image = [(UIImageView *)_containerView image];
-        avatarContainerView.contentMode = _containerView.contentMode;
-        avatarContainerView.clipsToBounds = _containerView.clipsToBounds;
-        avatarContainerView.layer.cornerRadius = _containerView.layer.cornerRadius;
-    }else {
-        for (UIImageView *subView in _containerView.subviews) {
-            if ([subView isKindOfClass:[UIImageView class]] && subView.image) {
-                avatarContainerView.image = subView.image;
-                avatarContainerView.contentMode = subView.contentMode;
-                avatarContainerView.clipsToBounds = subView.clipsToBounds;
-                avatarContainerView.layer.cornerRadius = subView.layer.cornerRadius;
-            }
-        }
-    }
     if (self.placeholderImage && !avatarContainerView.image) {
         avatarContainerView.image = self.placeholderImage;
     }
@@ -554,6 +557,9 @@ static UIWindow *window;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     LJAvatarBrowserCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"LJAvatarBrowserCellID" forIndexPath:indexPath];
     __weak typeof(self) weakBrowser = self;
+    if (self.previewPhotos.count > indexPath.row) {
+        [cell lj_setImageWithURL:self.previewPhotos[indexPath.row] placeholderImage:_placeholderImage];
+    }
     cell.singleTapGestureBlock = ^{
         [weakBrowser singleTap];
     };
@@ -582,11 +588,6 @@ static UIWindow *window;
             LJAvatarBrowserCell *ljCell = (LJAvatarBrowserCell *)cell;
             [ljCell lj_setHighQualityImageURL:highQualityImageURL placeholderImage:placeHolderImage];
         }
-    }else {
-        if (self.previewPhotos.count > indexPath.row) {
-            LJAvatarBrowserCell *ljCell = (LJAvatarBrowserCell *)cell;
-            [ljCell lj_setImageWithURL:self.previewPhotos[indexPath.row] placeholderImage:_placeholderImage];
-        }
     }
 }
 
@@ -595,3 +596,4 @@ static UIWindow *window;
 }
 
 @end
+
