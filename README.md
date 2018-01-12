@@ -78,12 +78,12 @@ import <Foundation/Foundation.h>
 /**
  占位图
  */
-@property (nonatomic, strong) UIImage *placeholderImage;
+@property (nonatomic, weak) UIImage *placeholderImage;
 
 /**
  正在预览的父View
  */
-@property (nonatomic, strong) UIView *containerView;
+@property (nonatomic, weak) UIView *containerView;
 
 /**
  长按事件
