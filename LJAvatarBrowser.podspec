@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "LJAvatarBrowser"
-  s.version      = "1.1.1"
+  s.version      = "1.1.2"
   s.summary      = "A lightweight picture viewer"
   s.homepage     = "https://github.com/iBoCoding/LJAvatarBrowser"
   s.license      = "MIT"
